@@ -78,55 +78,49 @@ export default function App() {
     // Replace this setTimeout with your fetch call to your backend,
     // which will then securely call the Gemini API.
     try {
-      // **IMPORTANT**: This is where you would call your backend API
-      // const response = await fetch('/api/generate-plan', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ prompt })
-      // });
-      // const data = await response.json();
-      // setGeneratedPlan(data.plan);
+        // Load API key from key.json
+  const keyResponse = await fetch('/Authorization/API.json');
+  if (!keyResponse.ok) {
+    throw new Error(`Failed to load API key: ${keyResponse.status}`);
+  }
+  const keyData = await keyResponse.json();
+  const apiKey = keyData["Authorization"];
 
-      // Simulating a network request
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockResponse = `
-### Workout Plan (${workoutFrequency} times a week)
-
-**Day 1: Full Body Strength**
-* Squats: 3 sets of 10-12 reps
-* Push-ups: 3 sets to failure
-* Bent-Over Rows: 3 sets of 10-12 reps
-* Plank: 3 sets, hold for 45-60 seconds
-
-**Day 2: Cardio & Core**
-* Running/Cycling: 30 minutes moderate intensity
-* Crunches: 3 sets of 15-20 reps
-* Leg Raises: 3 sets of 15-20 reps
-
-**Day 3: Rest**
-
-...and so on for the week.
-
-### Meal Plan
-
-**Day 1**
-* **Breakfast:** Oatmeal with berries and almonds.
-* **Lunch:** Grilled chicken salad with mixed greens.
-* **Dinner:** Baked salmon with quinoa and steamed broccoli.
-* **Snacks:** Greek yogurt, apple with peanut butter.
-
-...and so on for the week.
-      `;
-      setGeneratedPlan(mockResponse);
-
-    } catch (err) {
-      setError('Failed to generate a plan. Please try again.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+  console.log('Making request to Gemini API...');
+  
+    // Make request to Gemini API (using gemini-pro model with v1beta)
+  const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+      }),
     }
-  };
+  );
+
+  console.log('Gemini response status:', geminiResponse.status);
+  
+  if (!geminiResponse.ok) {
+    const errorData = await geminiResponse.json();
+    console.error('Gemini API error:', errorData);
+    throw new Error(`Gemini API error: ${errorData?.error?.message || geminiResponse.statusText}`);
+  }
+
+  const data = await geminiResponse.json();
+  console.log('Gemini API response:', data);
+  
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response generated.";
+  setGeneratedPlan(text);
+} catch (err) {
+  console.error('Error details:', err);
+  setError(`Failed to generate a plan: ${err.message}`);
+} finally {
+  setIsLoading(false);
+}
+    };
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans flex items-center justify-center p-4">
