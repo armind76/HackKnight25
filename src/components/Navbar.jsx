@@ -17,14 +17,14 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-slate-900/80 backdrop-blur-sm shadow-lg border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Left side: Logo and App Name */}
           <div className="flex items-center">
             <DumbbellIcon />
-            <span className="font-bold text-xl text-gray-800 ml-2">FitPlan</span>
+            <span className="font-bold text-xl text-blue-400 ml-2">Muscle & Hustle</span>
           </div>
 
           {/* Right side: Navigation Links */}
@@ -37,8 +37,8 @@ const Navbar = () => {
                   className={({ isActive }) =>
                     `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
                       isActive
-                        ? 'bg-indigo-600 text-white' // Active link style
-                        : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900' // Inactive link style
+                        ? 'bg-blue-600 text-white' // Active link style
+                        : 'text-slate-300 hover:bg-slate-700 hover:text-white' // Inactive link style
                     }`
                   }
                 >
