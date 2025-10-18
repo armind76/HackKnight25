@@ -28,6 +28,13 @@ This is a React-based fitness and meal planning web application that generates p
 
 ## Tech Stack Specifics
 
+### ElevenLabs Conversational AI
+- Uses `@elevenlabs/react` SDK for real-time voice conversations
+- `useConversation` hook manages connection state and audio
+- Agent receives context about user's plan (weight, height, generated plan)
+- Voice chat button in right column header
+- Connection status indicator shows when AI is listening
+
 ### Tailwind CSS 4.1.14
 - Uses new Vite plugin: `@tailwindcss/vite` 
 - Imports via `@import "tailwindcss"` in CSS files (not traditional `@tailwind` directives)

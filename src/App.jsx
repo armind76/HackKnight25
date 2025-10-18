@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useConversation } from '@elevenlabs/react';
 
 // Helper component for SVG icons
 const Icon = ({ path, className = "w-6 h-6" }) => (
@@ -33,11 +34,64 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState('');
   const [error, setError] = useState('');
+  const [elevenLabsApiKey, setElevenLabsApiKey] = useState('');
+
+  // ElevenLabs Conversational AI setup
+  const conversation = useConversation({
+    onConnect: () => console.log('Connected to ElevenLabs AI'),
+    onDisconnect: () => console.log('Disconnected from ElevenLabs AI'),
+    onMessage: (message) => console.log('AI Message:', message),
+    onError: (error) => console.error('AI Error:', error),
+  });
 
   // Handler for checkbox changes
   const handleDietaryChange = (e) => {
     const { name, checked } = e.target;
     setDietaryNeeds(prev => ({ ...prev, [name]: checked }));
+  };
+
+  // Start AI conversation
+  const startConversation = async () => {
+    try {
+      // Load API key if not already loaded
+      if (!elevenLabsApiKey) {
+        const keyResponse = await fetch('/Authorization/API.json');
+        if (!keyResponse.ok) {
+          throw new Error('Failed to load API key');
+        }
+        const keyData = await keyResponse.json();
+        const apiKey = keyData["ElevenLabsAPI"];
+        setElevenLabsApiKey(apiKey);
+
+        // Start conversation with context about the user's plan
+        await conversation.startSession({
+          agentId: 'agent_4501k7spa2z9fvtb70wwzztsvze1', // Replace with your ElevenLabs agent ID
+          clientTools: {},
+          overrides: {
+            agent: {
+              prompt: {
+                prompt: `You are a fitness and nutrition coach helping a user with their personalized plan. 
+                User details: Weight: ${weight} lbs, Height: ${height} inches, Workout Frequency: ${workoutFrequency} times/week.
+                ${generatedPlan ? `Here is their current plan:\n${generatedPlan}` : 'No plan generated yet.'}
+                Help them understand their plan, answer questions, and provide motivation.`
+              }
+            }
+          }
+        });
+      } else {
+        await conversation.startSession({
+          agentId: 'agent_4501k7spa2z9fvtb70wwzztsvze1',
+        });
+      }
+    } catch (err) {
+      console.error('Failed to start conversation:', err);
+      setError('Failed to start AI conversation. Please check your API key.');
+    }
+  };
+
+  // End AI conversation
+  const endConversation = async () => {
+    await conversation.endSession();
   };
 
   // Form submission handler
@@ -205,7 +259,36 @@ export default function App() {
 
         {/* --- RIGHT COLUMN: OUTPUT DISPLAY --- */}
         <div className="bg-gray-900 rounded-lg p-6 h-[70vh] overflow-y-auto">
-          <h2 className="text-2xl font-bold mb-4 text-cyan-400 border-b border-gray-700 pb-2">Your Custom Plan</h2>
+          <div className="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+            <h2 className="text-2xl font-bold text-cyan-400">Your Custom Plan</h2>
+            
+            {/* AI Conversation Button */}
+            <button
+              onClick={conversation.status === 'connected' ? endConversation : startConversation}
+              disabled={conversation.status === 'connecting'}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                conversation.status === 'connected'
+                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+              </svg>
+              {conversation.status === 'connected' ? 'End Chat' : 
+               conversation.status === 'connecting' ? 'Connecting...' : 
+               'Talk to AI Coach'}
+            </button>
+          </div>
+
+          {/* AI Conversation Status Indicator */}
+          {conversation.status === 'connected' && (
+            <div className="mb-4 p-3 bg-green-900/30 border border-green-600 rounded-lg flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <p className="text-green-400 text-sm font-medium">AI Coach is listening... Speak to ask questions about your plan!</p>
+            </div>
+          )}
           {isLoading && (
               <div className="flex flex-col items-center justify-center h-full text-gray-400">
                   <Icon path={ICONS.dumbbell} className="w-12 h-12 animate-bounce text-cyan-500" />
