@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useConversation } from '@elevenlabs/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // Helper component for SVG icons
 const Icon = ({ path, className = "w-6 h-6" }) => (
@@ -177,30 +179,33 @@ export default function App() {
 
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans flex items-center justify-center p-4">
-      <main className="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-black text-slate-200 font-sans flex flex-col">
+      <header className="w-full p-4 bg-slate-900/50 border-b border-slate-800 flex items-center justify-center">
+        <h1 className="text-2xl font-bold text-blue-400">Muscle & Hustle</h1>
+      </header>
+      <main className="flex-grow w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
         
         {/* --- LEFT COLUMN: INPUT FORM --- */}
-        <div className="flex flex-col space-y-6">
-          <h1 className="text-3xl font-bold text-center text-cyan-400">Personalize Your Plan</h1>
+        <div className="flex flex-col space-y-6 bg-slate-900/50 p-6 rounded-lg border border-slate-800">
+          <h2 className="text-2xl font-bold text-center text-blue-400">Personalize Your Plan</h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Stats Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="weight" className="block text-sm font-medium text-gray-300 mb-1">Weight (lbs)</label>
-                <input type="number" id="weight" value={weight} onChange={e => setWeight(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none" placeholder="e.g., 165" />
+                <label htmlFor="weight" className="block text-sm font-medium text-slate-400 mb-1">Weight (lbs)</label>
+                <input type="number" id="weight" value={weight} onChange={e => setWeight(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g., 165" />
               </div>
               <div>
-                <label htmlFor="height" className="block text-sm font-medium text-gray-300 mb-1">Height (in)</label>
-                <input type="number" id="height" value={height} onChange={e => setHeight(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none" placeholder="e.g., 70" />
+                <label htmlFor="height" className="block text-sm font-medium text-slate-400 mb-1">Height (in)</label>
+                <input type="number" id="height" value={height} onChange={e => setHeight(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g., 70" />
               </div>
             </div>
 
             {/* Activity Level */}
             <div>
-              <label htmlFor="workoutFrequency" className="block text-sm font-medium text-gray-300 mb-1">Activity Level</label>
-              <select id="workoutFrequency" value={workoutFrequency} onChange={e => setWorkoutFrequency(e.target.value)} className="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+              <label htmlFor="workoutFrequency" className="block text-sm font-medium text-slate-400 mb-1">Activity Level</label>
+              <select id="workoutFrequency" value={workoutFrequency} onChange={e => setWorkoutFrequency(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 <option value="1-2">1-2 workouts/week</option>
                 <option value="3-4">3-4 workouts/week</option>
                 <option value="5-7">5-7 workouts/week</option>
@@ -209,14 +214,14 @@ export default function App() {
 
             {/* Dietary Needs */}
             <div>
-              <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-2">
-                <Icon path={ICONS.leaf} className="w-5 h-5 text-green-400"/>
+              <h3 className="text-sm font-medium text-slate-400 flex items-center gap-2 mb-2">
+                <Icon path={ICONS.leaf} className="w-5 h-5 text-blue-400"/>
                 Dietary Needs
               </h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {Object.keys(dietaryNeeds).map(need => (
-                  <label key={need} className="flex items-center space-x-2 bg-gray-700 p-2 rounded-md cursor-pointer hover:bg-gray-600">
-                    <input type="checkbox" name={need} checked={dietaryNeeds[need]} onChange={handleDietaryChange} className="form-checkbox h-4 w-4 rounded bg-gray-600 border-gray-500 text-cyan-500 focus:ring-cyan-600" />
+                  <label key={need} className="flex items-center space-x-2 bg-slate-800 p-2 rounded-md cursor-pointer hover:bg-slate-700">
+                    <input type="checkbox" name={need} checked={dietaryNeeds[need]} onChange={handleDietaryChange} className="form-checkbox h-4 w-4 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-600" />
                     <span>{need.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
                   </label>
                 ))}
@@ -225,7 +230,7 @@ export default function App() {
 
             {/* Other Restrictions */}
             <div>
-               <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-2">
+               <h3 className="text-sm font-medium text-slate-400 flex items-center gap-2 mb-2">
                 <Icon path={ICONS.clipboard} className="w-5 h-5 text-yellow-400"/>
                 Other Restrictions/Preferences
               </h3>
@@ -233,7 +238,7 @@ export default function App() {
                 value={otherRestrictions}
                 onChange={e => setOtherRestrictions(e.target.value)}
                 rows="3"
-                className="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="e.g., no fish, allergic to strawberries, prefer high-protein meals..."
               ></textarea>
             </div>
@@ -241,7 +246,7 @@ export default function App() {
             {error && <p className="text-red-400 text-sm">{error}</p>}
 
             {/* Submit Button */}
-            <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+            <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-blue-600 to-slate-800 hover:from-blue-700 hover:to-slate-900 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
               {isLoading ? (
                 <>
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -258,9 +263,9 @@ export default function App() {
         </div>
 
         {/* --- RIGHT COLUMN: OUTPUT DISPLAY --- */}
-        <div className="bg-gray-900 rounded-lg p-6 h-[70vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-            <h2 className="text-2xl font-bold text-cyan-400">Your Custom Plan</h2>
+        <div className="bg-slate-900/50 rounded-lg p-6 h-[calc(100vh-12rem)] overflow-y-auto border border-slate-800 no-scrollbar">
+          <div className="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
+            <h2 className="text-2xl font-bold text-blue-400">Your Custom Plan</h2>
             
             {/* AI Conversation Button */}
             <button
@@ -269,7 +274,7 @@ export default function App() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                 conversation.status === 'connected'
                   ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : 'bg-green-600 hover:bg-green-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -290,18 +295,20 @@ export default function App() {
             </div>
           )}
           {isLoading && (
-              <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                  <Icon path={ICONS.dumbbell} className="w-12 h-12 animate-bounce text-cyan-500" />
+              <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                  <Icon path={ICONS.dumbbell} className="w-12 h-12 animate-bounce text-blue-500" />
                   <p className="mt-4 text-lg">Crafting your personalized plan...</p>
               </div>
           )}
           {generatedPlan && (
-            <div className="prose prose-invert prose-sm md:prose-base max-w-none" dangerouslySetInnerHTML={{ __html: generatedPlan.replace(/\n/g, '<br />') }}>
-              {/* The generated markdown content will be rendered here */}
+            <div className="prose prose-invert prose-sm md:prose-base max-w-none prose-p:text-slate-300 prose-headings:text-blue-400 prose-strong:text-slate-100 prose-ul:list-disc prose-ul:pl-6 prose-li:marker:text-blue-400">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {generatedPlan}
+              </ReactMarkdown>
             </div>
           )}
           {!isLoading && !generatedPlan && (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center">
+            <div className="flex flex-col items-center justify-center h-full text-slate-600 text-center">
                 <Icon path={ICONS.clipboard} className="w-12 h-12 mb-4"/>
                 <p>Your generated workout and meal plan will appear here once you fill out the form.</p>
             </div>
