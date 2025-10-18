@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Sensitive information
+public/Authorization/
+
 # Ignore API keys and secrets
 public/Authorization/
