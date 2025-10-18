@@ -99,10 +99,27 @@ export default function App() {
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const weightNum = parseFloat(weight);
+    const heightNum = parseFloat(height);
+
     if (!weight || !height) {
         setError('Please enter both weight and height.');
         return;
     }
+    if (weightNum <= 0 || heightNum <= 0) {
+        setError('Weight and height must be positive numbers.');
+        return;
+    }
+    if (weightNum > 2000) {
+        setError('Weight cannot exceed 2000 lbs.');
+        return;
+    }
+    if (heightNum > 120) {
+        setError('Height cannot exceed 120 inches.');
+        return;
+    }
+
     setError('');
     setIsLoading(true);
     setGeneratedPlan('');
@@ -263,56 +280,63 @@ export default function App() {
         </div>
 
         {/* --- RIGHT COLUMN: OUTPUT DISPLAY --- */}
-        <div className="bg-slate-900/50 rounded-lg p-6 h-[calc(100vh-12rem)] overflow-y-auto border border-slate-800 no-scrollbar">
-          <div className="flex justify-between items-center mb-4 border-b border-slate-700 pb-2">
-            <h2 className="text-2xl font-bold text-blue-400">Your Custom Plan</h2>
-            
-            {/* AI Conversation Button */}
-            <button
-              onClick={conversation.status === 'connected' ? endConversation : startConversation}
-              disabled={conversation.status === 'connecting'}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                conversation.status === 'connected'
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
-              </svg>
-              {conversation.status === 'connected' ? 'End Chat' : 
-               conversation.status === 'connecting' ? 'Connecting...' : 
-               'Talk to AI Coach'}
-            </button>
+        <div className="bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col h-[calc(100vh-8rem)]">
+          {/* Sticky Header */}
+          <div className="flex-shrink-0 p-6 pb-4 border-b border-slate-800">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-blue-400">Your Custom Plan</h2>
+              
+              {/* AI Conversation Button */}
+              <button
+                onClick={conversation.status === 'connected' ? endConversation : startConversation}
+                disabled={conversation.status === 'connecting'}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  conversation.status === 'connected'
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                </svg>
+                {conversation.status === 'connected' ? 'End Chat' : 
+                 conversation.status === 'connecting' ? 'Connecting...' : 
+                 'Talk to AI Coach'}
+              </button>
+            </div>
+
+            {/* AI Conversation Status Indicator */}
+            {conversation.status === 'connected' && (
+              <div className="mt-4 p-3 bg-green-900/30 border border-green-600 rounded-lg flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <p className="text-green-400 text-sm font-medium">AI Coach is listening... Speak to ask questions about your plan!</p>
+              </div>
+            )}
           </div>
 
-          {/* AI Conversation Status Indicator */}
-          {conversation.status === 'connected' && (
-            <div className="mb-4 p-3 bg-green-900/30 border border-green-600 rounded-lg flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <p className="text-green-400 text-sm font-medium">AI Coach is listening... Speak to ask questions about your plan!</p>
-            </div>
-          )}
-          {isLoading && (
-              <div className="flex flex-col items-center justify-center h-full text-slate-500">
-                  <Icon path={ICONS.dumbbell} className="w-12 h-12 animate-bounce text-blue-500" />
-                  <p className="mt-4 text-lg">Crafting your personalized plan...</p>
+          {/* Scrollable Content */}
+          <div className="flex-grow overflow-y-auto no-scrollbar p-6">
+            {isLoading && (
+                <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                    <Icon path={ICONS.dumbbell} className="w-12 h-12 animate-bounce text-blue-500" />
+                    <p className="mt-4 text-lg">Crafting your personalized plan...</p>
+                </div>
+            )}
+            {generatedPlan && (
+              <div className="prose prose-invert prose-sm md:prose-base max-w-none prose-p:text-slate-300 prose-headings:text-blue-400 prose-strong:text-slate-100 prose-ul:list-disc prose-ul:pl-6 prose-li:marker:text-blue-400">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {generatedPlan}
+                </ReactMarkdown>
               </div>
-          )}
-          {generatedPlan && (
-            <div className="prose prose-invert prose-sm md:prose-base max-w-none prose-p:text-slate-300 prose-headings:text-blue-400 prose-strong:text-slate-100 prose-ul:list-disc prose-ul:pl-6 prose-li:marker:text-blue-400">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {generatedPlan}
-              </ReactMarkdown>
-            </div>
-          )}
-          {!isLoading && !generatedPlan && (
-            <div className="flex flex-col items-center justify-center h-full text-slate-600 text-center">
-                <Icon path={ICONS.clipboard} className="w-12 h-12 mb-4"/>
-                <p>Your generated workout and meal plan will appear here once you fill out the form.</p>
-            </div>
-          )}
+            )}
+            {!isLoading && !generatedPlan && (
+              <div className="flex flex-col items-center justify-center h-full text-slate-600 text-center">
+                  <Icon path={ICONS.clipboard} className="w-12 h-12 mb-4"/>
+                  <p>Your generated workout and meal plan will appear here once you fill out the form.</p>
+              </div>
+            )}
+          </div>
         </div>
 
       </main>
