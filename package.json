@@ -15,11 +15,12 @@
     "@google/generative-ai": "^0.24.1",
     "@tailwindcss/vite": "^4.1.14",
     "elevenlabs": "^1.59.0",
+    "firebase": "^12.4.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1",
     "react-router-dom": "^6.23.1",
+    "remark-gfm": "^4.0.1",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
@@ -34,4 +35,3 @@
     "vite": "^7.1.7"
   }
 }
-

@@ -16,10 +16,9 @@ function App() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<PlanGenerator/>} />
           <Route path="/challenges" element={<DailyTasks />} />
-          <Route path="/generator" element={<PlanGenerator />} />
-          <Route path="/profile" element={<ProfileComponent />} />
+          <Route path="/profile" element={<Home/>} />
         </Routes>
       </main>
     </div>
