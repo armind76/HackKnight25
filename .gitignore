@@ -28,3 +28,5 @@ public/Authorization/
 
 # Ignore API keys and secrets
 public/Authorization/
+
+public/ELEVENLABS_SETUP.md
