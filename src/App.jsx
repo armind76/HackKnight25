@@ -23,14 +23,13 @@ export default function App() {
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [workoutFrequency, setWorkoutFrequency] = useState('3-4');
-  const [dietaryNeeds, setDietaryNeeds] = useState({
-    vegetarian: false,
-    vegan: false,
-    glutenFree: false,
-    dairyFree: false,
-    nutFree: false,
-  });
+  const [dietaryNeed, setDietaryNeed] = useState('none');
   const [otherRestrictions, setOtherRestrictions] = useState('');
+  const [travelDistance, setTravelDistance] = useState('');
+  const [goal, setGoal] = useState('bulk');
+  const [focus, setFocus] = useState('buildMuscle');
+  const [trainingSplit, setTrainingSplit] = useState('evenSplit');
+  const [gymTime, setGymTime] = useState('afternoon');
   
   // State for API response and loading status
   const [isLoading, setIsLoading] = useState(false);
@@ -45,12 +44,6 @@ export default function App() {
     onMessage: (message) => console.log('AI Message:', message),
     onError: (error) => console.error('AI Error:', error),
   });
-
-  // Handler for checkbox changes
-  const handleDietaryChange = (e) => {
-    const { name, checked } = e.target;
-    setDietaryNeeds(prev => ({ ...prev, [name]: checked }));
-  };
 
   // Start AI conversation
   const startConversation = async () => {
@@ -126,11 +119,6 @@ export default function App() {
 
     // --- PROMPT ENGINEERING ---
     // Constructing a detailed prompt for the Gemini API
-    const selectedDietaryNeeds = Object.entries(dietaryNeeds)
-      .filter(([_, isSelected]) => isSelected)
-      .map(([need]) => need.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()))
-      .join(', ');
-
     const prompt = `
       You are an expert fitness and nutrition coach. Generate a personalized 7-day workout and meal plan based on the following user details. The response should be formatted in clean markdown.
 
@@ -138,8 +126,13 @@ export default function App() {
       - Weight: ${weight} lbs
       - Height: ${height} inches
       - Desired Workout Frequency: ${workoutFrequency} times a week
-      - Dietary Needs: ${selectedDietaryNeeds.length > 0 ? selectedDietaryNeeds : 'None specified'}
+      - Dietary Needs: ${dietaryNeed !== 'none' ? dietaryNeed : 'None specified'}
       - Other Restrictions or Preferences: ${otherRestrictions.length > 0 ? otherRestrictions : 'None specified'}
+      - Travel Time to Gym: ${travelDistance} minutes
+      - Primary Goal: ${goal === 'bulk' ? 'Bulk up' : 'Cut (lose weight)'}
+      - Fitness Focus: ${focus === 'buildMuscle' ? 'Build Muscle' : 'Lose Fat'}
+      - Training Split: ${trainingSplit === 'evenSplit' ? 'Even Split (Cardio & Weight Training)' : trainingSplit === 'cardio' ? 'Focus on Cardio' : 'Focus on Weight Training'}
+      - Preferred Gym Time: ${gymTime.charAt(0).toUpperCase() + gymTime.slice(1)}
 
       Please provide two main sections: "Workout Plan" and "Meal Plan".
       For the Workout Plan, detail the exercises for each workout day, including sets, reps, and rest periods.
@@ -219,31 +212,71 @@ export default function App() {
               </div>
             </div>
 
-            {/* Activity Level */}
-            <div>
-              <label htmlFor="workoutFrequency" className="block text-sm font-medium text-slate-400 mb-1">Activity Level</label>
-              <select id="workoutFrequency" value={workoutFrequency} onChange={e => setWorkoutFrequency(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option value="1-2">1-2 workouts/week</option>
-                <option value="3-4">3-4 workouts/week</option>
-                <option value="5-7">5-7 workouts/week</option>
-              </select>
-            </div>
-
-            {/* Dietary Needs */}
-            <div>
-              <h3 className="text-sm font-medium text-slate-400 flex items-center gap-2 mb-2">
-                <Icon path={ICONS.leaf} className="w-5 h-5 text-blue-400"/>
-                Dietary Needs
-              </h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {Object.keys(dietaryNeeds).map(need => (
-                  <label key={need} className="flex items-center space-x-2 bg-slate-800 p-2 rounded-md cursor-pointer hover:bg-slate-700">
-                    <input type="checkbox" name={need} checked={dietaryNeeds[need]} onChange={handleDietaryChange} className="form-checkbox h-4 w-4 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-600" />
-                    <span>{need.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
-                  </label>
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="workoutFrequency" className="block text-sm font-medium text-slate-400 mb-1">Activity Level</label>
+                <select id="workoutFrequency" value={workoutFrequency} onChange={e => setWorkoutFrequency(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="1-2">1-2 workouts/week</option>
+                  <option value="3-4">3-4 workouts/week</option>
+                  <option value="5-7">5-7 workouts/week</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="dietaryNeed" className="block text-sm font-medium text-slate-400 mb-1">Dietary Needs</label>
+                <select id="dietaryNeed" value={dietaryNeed} onChange={e => setDietaryNeed(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="none">None</option>
+                  <option value="vegetarian">Vegetarian</option>
+                  <option value="vegan">Vegan</option>
+                  <option value="glutenFree">Gluten-Free</option>
+                  <option value="dairyFree">Dairy-Free</option>
+                  <option value="nutFree">Nut-Free</option>
+                </select>
               </div>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="travelDistance" className="block text-sm font-medium text-slate-400 mb-1">Travel to Gym (minutes)</label>
+                <input type="number" id="travelDistance" value={travelDistance} onChange={e => setTravelDistance(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g., 20" />
+              </div>
+              <div>
+                <label htmlFor="goal" className="block text-sm font-medium text-slate-400 mb-1">Goal</label>
+                <select id="goal" value={goal} onChange={e => setGoal(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="bulk">Bulk</option>
+                  <option value="cut">Cut</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="focus" className="block text-sm font-medium text-slate-400 mb-1">Focus</label>
+                <select id="focus" value={focus} onChange={e => setFocus(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="buildMuscle">Build Muscle</option>
+                  <option value="loseFat">Lose Fat</option>
+                  <option value="maintain">Maintain</option>
+                  <option value="loseFat">Body Recomposition</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="trainingSplit" className="block text-sm font-medium text-slate-400 mb-1">Training Split</label>
+                <select id="trainingSplit" value={trainingSplit} onChange={e => setTrainingSplit(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="evenSplit">Even Split</option>
+                  <option value="cardio">Cardio</option>
+                  <option value="weightTraining">Weight Training</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="gymTime" className="block text-sm font-medium text-slate-400 mb-1">Gym Time</label>
+                <select id="gymTime" value={gymTime} onChange={e => setGymTime(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="morning">Morning</option>
+                  <option value="afternoon">Afternoon</option>
+                  <option value="evening">Evening</option>
+                  <option value="night">Night</option>
+                </select>
+              </div>
+            </div>
+
 
             {/* Other Restrictions */}
             <div>
