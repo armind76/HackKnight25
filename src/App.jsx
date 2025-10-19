@@ -442,13 +442,13 @@ Meal Plan
                 <Icon path={ICONS.clipboard} className="w-5 h-5 text-yellow-400"/>
                 Other Restrictions/Preferences
               </h3>
-              <textarea
+              <input
+                type="text"
                 value={otherRestrictions}
                 onChange={e => setOtherRestrictions(e.target.value)}
-                rows="3"
                 className="w-full bg-slate-800 border border-slate-700 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="e.g., no fish, allergic to strawberries, prefer high-protein meals..."
-              ></textarea>
+              />
             </div>
             
             {error && <p className="text-red-400 text-sm">{error}</p>}
