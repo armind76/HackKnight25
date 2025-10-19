@@ -341,8 +341,24 @@ Meal Plan
 
   return (
     <div className="min-h-screen bg-black text-slate-200 font-sans flex flex-col">
-      <header className="w-full p-4 bg-slate-900/50 border-b border-slate-800 flex items-center justify-center">
-        <h1 className="text-2xl font-bold text-blue-400">Muscle & Hustle</h1>
+      <header className="w-full p-4 bg-gradient-to-r from-slate-900 via-slate-800 to-black/80 border-b border-slate-800 flex items-center justify-center shadow-lg">
+        <div className="flex items-center gap-3">
+          {/* Inline logo: stylized dumbbell with spark */}
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="9" width="20" height="6" rx="1" fill="white" opacity="0.12" />
+              <rect x="4" y="7" width="2" height="10" rx="0.5" fill="white" />
+              <rect x="18" y="7" width="2" height="10" rx="0.5" fill="white" />
+              <circle cx="8" cy="12" r="1.2" fill="#fff" opacity="0.9" />
+              <circle cx="16" cy="12" r="1.2" fill="#fff" opacity="0.9" />
+              <path d="M20 4l1.5 2-2 0.5" stroke="#fff" strokeWidth="0.8" strokeLinecap="round" strokeLinejoin="round" opacity="0.9"/>
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-extrabold text-white tracking-tight">Muscle & Hustle <span className="text-sm font-medium text-emerald-300">AI</span></h1>
+            <div className="text-xs text-slate-400">Personalized workouts & meal plans</div>
+          </div>
+        </div>
       </header>
       <main className="flex-grow w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
         
